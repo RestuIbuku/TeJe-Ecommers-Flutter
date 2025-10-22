@@ -6,6 +6,8 @@ import '../models/product_model.dart';
 import '../services/data_service.dart';
 import '../widgets/product_card.dart';
 import '../widgets/category_list.dart';
+import '../widgets/custom_appbar.dart';
+import '../widgets/gradient_background.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     switch (index) {
       case 0:
-
         break;
       case 1:
         Navigator.pushNamed(context, '/account');
@@ -69,50 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.blue,
-        title: const Text(
-          'TeJe E-Commerce',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // searchnya blom bisa pak blom sempet
-            },
-          ),
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart),
-                onPressed: () => Navigator.pushNamed(context, '/cart'),
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: const Text(
-                    '0',
-                    style: TextStyle(color: Colors.white, fontSize: 10),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+      appBar: CustomAppBar(userName: userName),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -120,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
             DrawerHeader(
               decoration: const BoxDecoration(color: Colors.blue),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const CircleAvatar(
@@ -169,60 +128,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+      body: GradientBackground(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Card(
+                    margin: const EdgeInsets.all(8),
+                    elevation: 4,
+                    child: CategoryList(
+                      selectedCategoryId: selectedCategoryId,
+                      onCategorySelected: _selectCategory,
+                    ),
+                  ),
+
+                  Expanded(
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.75,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                          ),
+                      itemCount: displayedProducts.length,
+                      itemBuilder: (context, index) {
+                        return ProductCard(product: displayedProducts[index]);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Text(
-              'Selamat Datang, $userName!',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-               
-                Card(
-                  margin: const EdgeInsets.all(8),
-                  elevation: 4,
-                  child: CategoryList(
-                    selectedCategoryId: selectedCategoryId,
-                    onCategorySelected: _selectCategory,
-                  ),
-                ),
-                
-                Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                        ),
-                    itemCount: displayedProducts.length,
-                    itemBuilder: (context, index) {
-                      return ProductCard(product: displayedProducts[index]);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
